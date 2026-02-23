@@ -127,15 +127,16 @@ flowchart TD
 ## 6) Quick Start Guide
 
 1. Read `CONVENTIONS.md` and `docs/sdd/quality/guardrails.md`.
-2. Create a folder: `docs/sdd/specs/user-stories/US-000X-short-slug/`.
-3. Run `create-spec`.
-4. Run `enrich-user-story`.
-5. Review and refine the AI contract proposal in `contracts/`.
-6. Run `plan-ticket` and set `plan.md` to `status: pending`.
-7. Human approval -> set `plan.md` to `status: approved`.
-8. Run `develop-from-plan` (moves plan to `in-progress`).
-9. Run `review-ticket` before merge.
-10. After release checks, set `plan.md` to `status: done`.
+2. Create `.ai/project-profile.md` from `.ai/project-profile.template.md` and fill team/project-specific context.
+3. Create a folder: `docs/sdd/specs/user-stories/US-000X-short-slug/`.
+4. Run `create-spec`.
+5. Run `enrich-user-story`.
+6. Review and refine the AI contract proposal in `contracts/`.
+7. Run `plan-ticket` and set `plan.md` to `status: pending`.
+8. Human approval -> set `plan.md` to `status: approved`.
+9. Run `develop-from-plan` (moves plan to `in-progress`).
+10. Run `review-ticket` before merge.
+11. After release checks, set `plan.md` to `status: done`.
 
 For a longer onboarding walkthrough, see [`QUICKSTART.md`](QUICKSTART.md).
 

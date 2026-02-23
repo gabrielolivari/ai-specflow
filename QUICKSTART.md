@@ -6,7 +6,7 @@ Use this onboarding flow to run the framework from idea to delivered change.
 
 1. Read `CONVENTIONS.md`.
 2. Read `docs/sdd/quality/guardrails.md`.
-3. (Optional) Initialize `.ai/project-profile.md` from `.ai/project-profile.template.md`.
+3. Initialize `.ai/project-profile.md` from `.ai/project-profile.template.md`.
 
 ## Progressive Workflow
 
