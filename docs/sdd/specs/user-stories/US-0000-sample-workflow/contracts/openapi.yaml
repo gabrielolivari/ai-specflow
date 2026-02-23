@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: Sample Workflow Contract
+  version: 1.0.0
+paths:
+  /sample-workflow:
+    get:
+      summary: Sample endpoint used for documentation only
+      responses:
+        "200":
+          description: Success

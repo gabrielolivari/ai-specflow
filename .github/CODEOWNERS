@@ -1,0 +1,31 @@
+# Replace `your-org` with your GitHub organization slug.
+# Team format: @org/team-slug
+
+# Default owner for everything
+* @your-org/devs
+
+# Framework root and governance
+/README.md @your-org/ai @your-org/tech-leads
+/CONVENTIONS.md @your-org/ai @your-org/tech-leads
+/QUICKSTART.md @your-org/ai @your-org/tech-leads
+
+# AI bridge files (root)
+/AGENTS.md @your-org/ai @your-org/tech-leads
+/CLAUDE.md @your-org/ai @your-org/tech-leads
+/codex.md @your-org/ai @your-org/tech-leads
+/GEMINI.md @your-org/ai @your-org/tech-leads
+
+# AI operating layer
+/.ai/ @your-org/ai
+/.cursor/ @your-org/ai
+/.claude/ @your-org/ai
+/.github/copilot-instructions.md @your-org/ai
+
+# SDD specs (includes plans inside user stories)
+/docs/sdd/specs/ @your-org/devs @your-org/tech-leads @your-org/ai
+
+# Architecture and decisions
+/docs/sdd/decisions/ @your-org/tech-leads @your-org/ai
+
+# Quality ownership
+/docs/sdd/quality/ @your-org/qa @your-org/tech-leads @your-org/ai

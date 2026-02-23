@@ -1,0 +1,103 @@
+name: Traceability PR Link
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update-traceability:
+    # Skip fork PRs because GITHUB_TOKEN cannot push there safely.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Find changed traceability files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- 'docs/sdd/specs/**/traceability.md' || true)
+          {
+            echo "files<<EOF"
+            echo "$FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Replace AUTO_PR placeholder
+        if: steps.changed.outputs.files != ''
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          pr_number = os.environ["PR_NUMBER"]
+          pr_url = os.environ["PR_URL"]
+          replacement = f"PR #{pr_number} ({pr_url})"
+          files = [f.strip() for f in os.environ.get("FILES", "").splitlines() if f.strip()]
+
+          def read_status(spec_path: Path):
+            if not spec_path.exists():
+              return None
+            text = spec_path.read_text(encoding="utf-8")
+            # Parse simple YAML frontmatter status line.
+            if text.startswith("---"):
+              end = text.find("\n---", 3)
+              if end != -1:
+                frontmatter = text[3:end].splitlines()
+                for line in frontmatter:
+                  stripped = line.strip()
+                  if stripped.lower().startswith("status:"):
+                    return stripped.split(":", 1)[1].strip().lower()
+            return None
+
+          invalid = []
+          for file_path in files:
+            p = Path(file_path)
+            if not p.exists():
+              continue
+            text = p.read_text(encoding="utf-8")
+            if "AUTO_PR" not in text:
+              continue
+            spec_status = read_status(p.parent / "spec.md")
+            if spec_status == "draft":
+              invalid.append(file_path)
+
+          if invalid:
+            print("AUTO_PR is not allowed when related spec status is 'draft':")
+            for f in invalid:
+              print(f"- {f}")
+            raise SystemExit(1)
+
+          for file_path in files:
+            p = Path(file_path)
+            if not p.exists():
+              continue
+            text = p.read_text(encoding="utf-8")
+            updated = text.replace("AUTO_PR", replacement)
+            if updated != text:
+              p.write_text(updated, encoding="utf-8")
+          PY
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet; then
+            echo "No traceability updates required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/sdd/specs/**/traceability.md
+          git commit -m "chore: auto-link PR in traceability"
+          git push

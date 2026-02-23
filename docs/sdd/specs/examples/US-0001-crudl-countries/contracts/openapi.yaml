@@ -1,0 +1,540 @@
+openapi: 3.0.3
+info:
+  title: Countries API
+  description: CRUDL operations for the countries catalog.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+tags:
+  - name: Countries
+    description: Country catalog management
+
+paths:
+  /countries:
+    get:
+      tags: [Countries]
+      summary: List countries
+      description: Returns a paginated list of countries with optional search and filters.
+      operationId: listCountries
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number (1-based).
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Items per page.
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Case-insensitive partial match on country name.
+        - name: region
+          in: query
+          schema:
+            type: string
+          description: Exact match on region.
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status.
+      responses:
+        "200":
+          description: Paginated country list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CountryListResponse"
+              example:
+                data:
+                  - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    code: "AR"
+                    iso3: "ARG"
+                    numericCode: "032"
+                    name: "Argentina"
+                    capital: "Buenos Aires"
+                    currency: "ARS"
+                    region: "Americas"
+                    active: true
+                    createdAt: "2026-01-15T10:00:00Z"
+                    updatedAt: "2026-01-15T10:00:00Z"
+                  - id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                    code: "DE"
+                    iso3: "DEU"
+                    numericCode: "276"
+                    name: "Germany"
+                    capital: "Berlin"
+                    currency: "EUR"
+                    region: "Europe"
+                    active: true
+                    createdAt: "2026-01-15T10:05:00Z"
+                    updatedAt: "2026-01-15T10:05:00Z"
+                total: 2
+                page: 1
+                limit: 20
+                totalPages: 1
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Countries]
+      summary: Create country
+      description: Creates a new country. Requires `admin` or `catalog-manager` role.
+      operationId: createCountry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountryCreate"
+            example:
+              code: "AR"
+              iso3: "ARG"
+              numericCode: "032"
+              name: "Argentina"
+              capital: "Buenos Aires"
+              currency: "ARS"
+              region: "Americas"
+      responses:
+        "201":
+          description: Country created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                code: "AR"
+                iso3: "ARG"
+                numericCode: "032"
+                name: "Argentina"
+                capital: "Buenos Aires"
+                currency: "ARS"
+                region: "Americas"
+                active: true
+                createdAt: "2026-01-15T10:00:00Z"
+                updatedAt: "2026-01-15T10:00:00Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: Conflict — duplicate code, iso3, or numericCode.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error:
+                  code: "CONFLICT"
+                  message: "A country with code 'AR' already exists."
+                  field: "code"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /countries/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Country UUID.
+
+    get:
+      tags: [Countries]
+      summary: Get country by ID
+      description: Returns a single country by its UUID.
+      operationId: getCountry
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Country found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                code: "AR"
+                iso3: "ARG"
+                numericCode: "032"
+                name: "Argentina"
+                capital: "Buenos Aires"
+                currency: "ARS"
+                region: "Americas"
+                active: true
+                createdAt: "2026-01-15T10:00:00Z"
+                updatedAt: "2026-01-15T10:00:00Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags: [Countries]
+      summary: Full update country
+      description: Replaces all mutable fields of an existing country. Requires `admin` or `catalog-manager` role.
+      operationId: updateCountry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountryUpdate"
+            example:
+              code: "AR"
+              iso3: "ARG"
+              numericCode: "032"
+              name: "República Argentina"
+              capital: "Buenos Aires"
+              currency: "ARS"
+              region: "Americas"
+              active: true
+      responses:
+        "200":
+          description: Country updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Conflict — duplicate code, iso3, or numericCode.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    patch:
+      tags: [Countries]
+      summary: Partial update country
+      description: Updates only the provided fields of an existing country. Requires `admin` or `catalog-manager` role.
+      operationId: patchCountry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountryPatch"
+            example:
+              capital: "Ciudad Autónoma de Buenos Aires"
+      responses:
+        "200":
+          description: Country partially updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Conflict — duplicate code, iso3, or numericCode.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags: [Countries]
+      summary: Soft-delete country
+      description: Sets the country as inactive (`active: false`). Does not physically remove the record. Requires `admin` or `catalog-manager` role.
+      operationId: deleteCountry
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Country soft-deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Country"
+              example:
+                id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                code: "AR"
+                iso3: "ARG"
+                numericCode: "032"
+                name: "Argentina"
+                capital: "Buenos Aires"
+                currency: "ARS"
+                region: "Americas"
+                active: false
+                createdAt: "2026-01-15T10:00:00Z"
+                updatedAt: "2026-01-20T14:30:00Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Country:
+      type: object
+      required: [id, code, iso3, numericCode, name, capital, currency, region, active, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier.
+        code:
+          type: string
+          pattern: "^[A-Z]{2}$"
+          description: ISO 3166-1 alpha-2 code.
+          example: "AR"
+        iso3:
+          type: string
+          pattern: "^[A-Z]{3}$"
+          description: ISO 3166-1 alpha-3 code.
+          example: "ARG"
+        numericCode:
+          type: string
+          pattern: "^[0-9]{3}$"
+          description: ISO 3166-1 numeric code (zero-padded).
+          example: "032"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Country display name.
+          example: "Argentina"
+        capital:
+          type: string
+          maxLength: 100
+          description: Capital city.
+          example: "Buenos Aires"
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+          description: ISO 4217 currency code.
+          example: "ARS"
+        region:
+          type: string
+          maxLength: 50
+          description: Geographic region.
+          example: "Americas"
+        active:
+          type: boolean
+          description: Whether the country is active.
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CountryCreate:
+      type: object
+      required: [code, iso3, numericCode, name, capital, currency, region]
+      properties:
+        code:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        iso3:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        numericCode:
+          type: string
+          pattern: "^[0-9]{3}$"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        capital:
+          type: string
+          maxLength: 100
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        region:
+          type: string
+          maxLength: 50
+
+    CountryUpdate:
+      type: object
+      required: [code, iso3, numericCode, name, capital, currency, region, active]
+      properties:
+        code:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        iso3:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        numericCode:
+          type: string
+          pattern: "^[0-9]{3}$"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        capital:
+          type: string
+          maxLength: 100
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        region:
+          type: string
+          maxLength: 50
+        active:
+          type: boolean
+
+    CountryPatch:
+      type: object
+      minProperties: 1
+      properties:
+        code:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        iso3:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        numericCode:
+          type: string
+          pattern: "^[0-9]{3}$"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        capital:
+          type: string
+          maxLength: 100
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        region:
+          type: string
+          maxLength: 50
+        active:
+          type: boolean
+
+    CountryListResponse:
+      type: object
+      required: [data, total, page, limit, totalPages]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Country"
+        total:
+          type: integer
+          description: Total number of matching records.
+          example: 25
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        limit:
+          type: integer
+          description: Items per page.
+          example: 20
+        totalPages:
+          type: integer
+          description: Total number of pages.
+          example: 2
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "Invalid input data."
+            field:
+              type: string
+              example: "code"
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "Authentication required."
+
+    Forbidden:
+      description: Insufficient permissions.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: "FORBIDDEN"
+              message: "You do not have permission to perform this action."
+
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: "NOT_FOUND"
+              message: "Country not found."
+
+    ValidationError:
+      description: Validation error in request body.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: "VALIDATION_ERROR"
+              message: "Invalid input data."
+              field: "code"

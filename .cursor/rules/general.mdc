@@ -1,0 +1,11 @@
+---
+description: Cursor bridge to AI SDD base standards
+alwaysApply: true
+---
+
+- Load `.ai/specs/base-standards.mdc` first.
+- Read `.ai/README.md`.
+- Apply the relevant role from `.ai/agents/`.
+- Use `.ai/commands/` for structured execution.
+- Enforce `docs/sdd/quality/guardrails.md` and checklists.
+- Treat `docs/sdd/specs/` as the functional source of truth.

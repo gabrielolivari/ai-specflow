@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Example API Contract
+  version: 1.0.0
+paths:
+  /resource:
+    get:
+      summary: List resources
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Resource"
+components:
+  schemas:
+    Resource:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
