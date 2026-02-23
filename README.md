@@ -55,17 +55,17 @@ Each step creates or updates only the artifacts needed for that stage.
 
 ```mermaid
 flowchart TD
-    A[Create User Story Folder] --> B[/create-spec]
+    A[Create User Story Folder] --> B["/create-spec"]
     B --> C[spec.md initial draft]
-    C --> D[/enrich-user-story]
+    C --> D["/enrich-user-story"]
     D --> E[Update spec.md + create acceptance-criteria.md + risk-matrix.md + contract proposal]
     E --> F[Human validates/refines contracts/]
-    F --> G[/plan-ticket]
+    F --> G["/plan-ticket"]
     G --> H[Create plan.md + test-plan.md]
     H --> I{Human plan approval}
-    I -->|Approved| J[/develop-from-plan]
+    I -->|Approved| J["/develop-from-plan"]
     J --> K[Update code + traceability.md + changelog.md]
-    K --> L[/review-ticket]
+    K --> L["/review-ticket"]
     L --> M{Quality gates pass?}
     M -->|Yes| N[Merge and close: plan.md status done]
     M -->|No| O[Fix gaps and re-run review]
