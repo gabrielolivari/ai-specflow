@@ -23,6 +23,7 @@ It also updates:
 - Minimal implementation aligned to plan tasks
 - Test updates aligned to acceptance criteria
 - Traceability updates (`traceability.md`)
+- For implemented requirements in this execution, set `PR/Commit` from `DRAFT` to `AUTO_PR`
 - Changelog updates (`changelog.md`)
 - Update `plan.md` status to `in-progress` if not already
 
@@ -31,3 +32,4 @@ It also updates:
 - Do not change behavior beyond spec scope.
 - If scope drift is needed, stop and request spec/plan update.
 - Use templates from `docs/sdd/specs/templates/` for traceability and changelog structure.
+- Do not replace all `DRAFT` rows globally; only update rows corresponding to requirements implemented in this cycle.
