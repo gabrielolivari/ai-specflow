@@ -3,6 +3,46 @@
 A Specification-Driven Development (SDD) governance framework for AI-assisted software delivery.  
 It treats **User Stories as first-class artifacts** and enforces traceability from requirements to code, tests, and PRs.
 
+## Adoption Paths
+
+### Option A: Install into an Existing Project (npx)
+
+Use the installer when you want to add AI SpecFlow into an existing repository without replacing its current README:
+
+```bash
+npx ai-specflow init
+```
+
+Useful options:
+
+- `--dry-run`: preview changes without writing files
+- `--force`: overwrite existing scaffold files in `.ai/` and `docs/sdd/`
+- `--with-claude`: include `CLAUDE.md` and `.claude/`
+- `--with-cursor`: include `AGENTS.md` and `.cursor/`
+- `--with-codex`: include `codex.md`
+- `--with-gemini`: include `GEMINI.md`
+- `--with-all`: include all providers above
+
+By default, `init` installs `.ai/` and `docs/sdd/`. Provider-specific root and tool folders are opt-in via flags and use managed merge blocks for root wrappers.
+
+### Option B: Use as a Base Template (No Installer)
+
+Use this mode if you prefer manual setup and full control.
+
+Copy these into your target project root:
+
+- `.ai/`
+- `docs/sdd/`
+- Optional root bridge files: `AGENTS.md`, `CLAUDE.md`, `codex.md`, `GEMINI.md`
+- Optional project docs: `CONVENTIONS.md`, `QUICKSTART.md`
+
+Do not copy framework runtime/publishing files:
+
+- `bin/`
+- `scripts/`
+- `package.json`
+- This repository `README.md` (keep your project's own README)
+
 ## 1) What This Project Is
 
 This repository provides a structured operating model to deliver software with AI support while preserving engineering control:

@@ -1,0 +1,45 @@
+{
+  "name": "ai-specflow",
+  "version": "0.1.1",
+  "description": "Specification-driven AI delivery bootstrapper and template",
+  "type": "module",
+  "bin": {
+    "ai-specflow": "bin/ai-specflow.js"
+  },
+  "scripts": {
+    "start": "node ./bin/ai-specflow.js",
+    "test": "node ./bin/ai-specflow.js --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielolivari/ai-specflow.git"
+  },
+  "homepage": "https://github.com/gabrielolivari/ai-specflow#readme",
+  "files": [
+    "bin/",
+    ".ai/",
+    ".claude/",
+    ".cursor/",
+    "docs/sdd/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "codex.md",
+    "GEMINI.md",
+    "README.md",
+    "CONVENTIONS.md",
+    "QUICKSTART.md",
+    "scripts/"
+  ],
+  "keywords": [
+    "ai",
+    "sdd",
+    "spec-first",
+    "bootstrap",
+    "template"
+  ],
+  "author": "gabrielolivari",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
